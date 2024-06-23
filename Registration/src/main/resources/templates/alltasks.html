@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Tasks</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<h1>All Tasks</h1>
+<div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+</div>
+<!-- Display success message if available -->
+<div th:if="${successMessage}" class="alert alert-success" role="alert">
+    <span th:text="${successMessage}"></span>
+</div>
+
+<div class="border p-3">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterácia cez všetky úlohy a ich zobrazenie -->
+        <th:block th:each="task : ${tasks}">
+            <tr>
+                <td th:text="${task.id}"></td>
+                <td th:text="${task.title}"></td>
+                <td th:text="${task.description}"></td>
+                <td>
+                    <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-info btn-sm">Task Detail</a>
+                    <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-primary btn-sm">Edit</a>
+                    <!-- Form for Delete Task -->
+                    <form th:action="@{/tasks/deleteTask/{id}(id=${task.id})}" method="delete" style="display:inline;">
+                        <input type="hidden" name="method" value="delete" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </th:block>
+        </div>
+    </tbody>
+</table>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <a th:href="@{/tasks/create}" class="btn btn-success btn-sm">Create New Task</a>
+        </div>
+        <div class="col-6 text-end">
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-primary">Sign Out</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+<!--        <li th:text="${task.id}"></li>-->
+<!--        <li th:text="${task.title}"></li>-->
+<!--        <li th:text="${task.description}"></li>-->

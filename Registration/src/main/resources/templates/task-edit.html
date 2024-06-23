@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1>Edit Task</h1>
+
+    <form th:action="@{/tasks/updateTask/{id}(id=${task.id})}" method="post">
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" class="form-control" th:value="${task.title}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" class="form-control" rows="4" th:text="${task.description}" cols="50"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="deadline">Deadline:</label>
+            <input type="datetime-local" id="deadline" name="deadline" class="form-control" th:value="${task.deadline}">
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" class="form-control" th:value="${task.status}">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Task</button>
+    </form>
+</div>
+</body>
+</html>
