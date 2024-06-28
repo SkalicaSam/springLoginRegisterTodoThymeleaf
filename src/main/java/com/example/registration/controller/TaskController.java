@@ -8,6 +8,10 @@ import com.example.registration.service.CustomUserDetailsService;
 import com.example.registration.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,18 +51,23 @@ public class TaskController {
     }
 
     @GetMapping //("/tasks")*
-    public String getAllTasks(Model model ) {
+    public String getAllTasks(Model model,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "3") int size ) {
         User userLoggedIn= customUserDetailsService.getLoggedInUser();
         if (userLoggedIn == null){
         model.addAttribute("message", "No userLoggedIn.");
         return "alltasks";
         }
 
-        List<Task> tasks = taskService.getTasksByUser(userLoggedIn);
-        if (tasks.isEmpty()) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Task> tasksPage = taskService.findByUserId(userLoggedIn.getId(), pageable);
+        if (tasksPage.isEmpty()) {
             model.addAttribute("message", "No tasks available.");
         } else {
-            model.addAttribute("tasks", tasks);
+            model.addAttribute("tasks", tasksPage.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tasksPage.getTotalPages());
         }
         return "alltasks";
     }

@@ -48,6 +48,25 @@
         </div>
     </tbody>
 </table>
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li th:if="${currentPage > 0}" class="page-item">
+                <a class="page-link" th:href="@{/tasks(page=${currentPage - 1}, size=${size})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i} == ${currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/tasks(page=${i}, size=${size})}" th:text="${i + 1}">1</a>
+            </li>
+            <li th:if="${currentPage < totalPages - 1}" class="page-item">
+                <a class="page-link" th:href="@{/tasks(page=${currentPage + 1}, size=${size})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
 <div class="container">
     <div class="row">

@@ -4,6 +4,8 @@ import com.example.registration.model.Task;
 import com.example.registration.model.User;
 import com.example.registration.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +40,10 @@ public class TaskService {
 
     public List<Task> getTasksByUser(User user) {
         return taskRepository.findByUser(user);
+    }
+
+    public Page<Task> findByUserId(Long userId, Pageable pageable) {
+        return taskRepository.findByUserId(userId, pageable);
     }
 
     public Task getTaskForLoggedInUserById(Long id) {
