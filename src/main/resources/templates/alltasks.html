@@ -68,7 +68,7 @@
                     <td th:text="${task.description}"></td>
                     <td>
                         <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-info btn-sm">Task Detail</a>
-                        <button type="button" class="btn btn-sm btn-info" th:attr="data-task-id=${task.id},data-task-title=${task.title},data-task-description=${task.description}" data-toggle="modal" data-target="#taskDetailModal" onclick="openTaskDetail(this)"> Modal Detail</button>
+                        <button type="button" class="btn btn-sm btn-info" data-toggle="modal" th:data-target="'#taskDetailModal-' + ${task.id}">Modal Detail</button>
                         <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-primary btn-sm">Edit</a>
                         <!-- Form for Delete Task -->
                         <form th:action="@{/tasks/deleteTask/{id}(id=${task.id})}" method="delete" style="display:inline;">
@@ -77,46 +77,34 @@
                         </form>
                     </td>
                 </tr>
+
+                <!-- Modal task details -->
+                <div class="modal fade" th:id="'taskDetailModal-' + ${task.id}" tabindex="-1" role="dialog" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="taskDetailModalLabel">Task Detail</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>ID: <span th:text="${task.id}"></span></p>
+                                <p>Title: <span th:text="${task.title}"></span></p>
+                                <p>Description: <span th:text="${task.description}"></span></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </th:block>
 <!--        </th:block>-->
         </div>
     </tbody>
 </table>
 
-
-<!--*modal-->
-<div class="modal fade" id="taskDetailModal" tabindex="-1" role="dialog" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="taskDetailModalLabel">Task Detail</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>ID: <span id="taskId"></span></p>
-                <p>Task Title: <span id="taskTitle"></span></p>
-                <p>Task Description: <span id="taskDescription"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script th:inline="javascript">
-    function openTaskDetail(button) {
-        var taskId = $(button).data('task-id');
-        var taskTitle = $(button).data('task-title');
-        var taskDescription = $(button).data('task-description');
-
-         $('#taskId').text(taskId);
-         $('#taskTitle').text(taskTitle);
-         $('#taskDescription').text(taskDescription);
-    }
-</script>
 
 <div th:if="${hasResults}">
     <div>
