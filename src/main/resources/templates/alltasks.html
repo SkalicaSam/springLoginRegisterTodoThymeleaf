@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Tasks</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
 <h1>All Tasks</h1>
@@ -65,6 +68,7 @@
                     <td th:text="${task.description}"></td>
                     <td>
                         <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-info btn-sm">Task Detail</a>
+                        <button type="button" class="btn btn-sm btn-info" th:attr="data-task-id=${task.id},data-task-title=${task.title},data-task-description=${task.description}" data-toggle="modal" data-target="#taskDetailModal" onclick="openTaskDetail(this)"> Modal Detail</button>
                         <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-primary btn-sm">Edit</a>
                         <!-- Form for Delete Task -->
                         <form th:action="@{/tasks/deleteTask/{id}(id=${task.id})}" method="delete" style="display:inline;">
@@ -78,6 +82,41 @@
         </div>
     </tbody>
 </table>
+
+
+<!--*modal-->
+<div class="modal fade" id="taskDetailModal" tabindex="-1" role="dialog" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taskDetailModalLabel">Task Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>ID: <span id="taskId"></span></p>
+                <p>Task Title: <span id="taskTitle"></span></p>
+                <p>Task Description: <span id="taskDescription"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function openTaskDetail(button) {
+        var taskId = $(button).data('task-id');
+        var taskTitle = $(button).data('task-title');
+        var taskDescription = $(button).data('task-description');
+
+         $('#taskId').text(taskId);
+         $('#taskTitle').text(taskTitle);
+         $('#taskDescription').text(taskDescription);
+    }
+</script>
 
 <div th:if="${hasResults}">
     <div>
