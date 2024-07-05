@@ -17,6 +17,29 @@
     <span th:text="${successMessage}"></span>
 </div>
 
+<div>
+    <form th:action="@{/tasks}" method="get">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="Search..." />
+        <select name="searchType">
+            <option value="description" th:selected="${searchType == 'description'}">Description</option>
+            <option value="title" th:selected="${searchType == 'title'}">Title</option>
+            <option value="id" th:selected="${searchType == 'id'}">ID</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+</div>
+<div>
+    <label for="sort">Sort by:</label>
+    <select id="sort" name="sortBy" onchange="location = this.value;">
+        <option th:selected="${sortBy == 'id'}" th:value="@{/tasks(page=${currentPage}, size=${size}, sortBy='id', keyword=${keyword})}">Date</option>
+        <option th:selected="${sortBy == 'description'}" th:value="@{/tasks(page=${currentPage}, size=${size}, sortBy='description', keyword=${keyword})}">Description</option>
+        <option th:selected="${sortBy == 'title'}" th:value="@{/tasks(page=${currentPage}, size=${size}, sortBy='title', keyword=${keyword}, searchType=${searchType})}">Title</option>
+        <option th:selected="${sortBy == 'status'}" th:value="@{/tasks(page=${currentPage}, size=${size}, sortBy='status', keyword=${keyword})}">Status</option>
+    </select>
+</div>
+
+
+
 <div class="border p-3">
     <table class="table table-bordered">
         <thead>
@@ -28,45 +51,59 @@
         </tr>
         </thead>
         <tbody>
+<!--        <th:block th:if="${tasks.empty}">-->
+<!--            <tr>-->
+<!--                <td colspan="4">No tasks found.</td>-->
+<!--            </tr>-->
+<!--        </th:block>-->
         <!-- Iterácia cez všetky úlohy a ich zobrazenie -->
-        <th:block th:each="task : ${tasks}">
-            <tr>
-                <td th:text="${task.id}"></td>
-                <td th:text="${task.title}"></td>
-                <td th:text="${task.description}"></td>
-                <td>
-                    <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-info btn-sm">Task Detail</a>
-                    <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-primary btn-sm">Edit</a>
-                    <!-- Form for Delete Task -->
-                    <form th:action="@{/tasks/deleteTask/{id}(id=${task.id})}" method="delete" style="display:inline;">
-                        <input type="hidden" name="method" value="delete" />
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        </th:block>
+<!--        <th:block th:if="${not tasks.empty}">-->
+            <th:block th:each="task : ${tasks}">
+                <tr>
+                    <td th:text="${task.id}"></td>
+                    <td th:text="${task.title}"></td>
+                    <td th:text="${task.description}"></td>
+                    <td>
+                        <a th:href="@{/tasks/{id}(id=${task.id})}" class="btn btn-info btn-sm">Task Detail</a>
+                        <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-primary btn-sm">Edit</a>
+                        <!-- Form for Delete Task -->
+                        <form th:action="@{/tasks/deleteTask/{id}(id=${task.id})}" method="delete" style="display:inline;">
+                            <input type="hidden" name="method" value="delete" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </th:block>
+<!--        </th:block>-->
         </div>
     </tbody>
 </table>
-<div>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li th:if="${currentPage > 0}" class="page-item">
-                <a class="page-link" th:href="@{/tasks(page=${currentPage - 1}, size=${size})}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i} == ${currentPage} ? 'active'">
-                <a class="page-link" th:href="@{/tasks(page=${i}, size=${size})}" th:text="${i + 1}">1</a>
-            </li>
-            <li th:if="${currentPage < totalPages - 1}" class="page-item">
-                <a class="page-link" th:href="@{/tasks(page=${currentPage + 1}, size=${size})}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+
+<div th:if="${hasResults}">
+    <div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li th:if="${currentPage > 0}" class="page-item">
+                    <a class="page-link" th:href="@{/tasks(page=${currentPage - 1}, size=${size})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i} == ${currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/tasks(page=${i}, size=${size})}" th:text="${i + 1}">1</a>
+                </li>
+                <li th:if="${currentPage < totalPages - 1}" class="page-item">
+                    <a class="page-link" th:href="@{/tasks(page=${currentPage + 1}, size=${size})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
+</th:block>
+
+
+
 
 <div class="container">
     <div class="row">

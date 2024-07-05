@@ -46,6 +46,21 @@ public class TaskService {
         return taskRepository.findByUserId(userId, pageable);
     }
 
+    public Page<Task> findByUserIdAndDescriptionContaining(Long userId, String description, Pageable pageable) {
+        return taskRepository.findByUserIdAndDescriptionContaining(userId, description, pageable);
+    }
+
+    public Page<Task> findByUserIdAndTitleContaining(Long userId, String title, Pageable pageable) {
+        return taskRepository.findByUserIdAndTitleContaining(userId, title, pageable);
+    }
+
+    public Page<Task> findByUserIdAndId(Long userId, Long id, Pageable pageable) {
+        return taskRepository.findByUserIdAndId(userId, id, pageable);
+    }
+
+
+
+
     public Task getTaskForLoggedInUserById(Long id) {
         User userLoggedIn = customUserDetailsService.getLoggedInUser();
 

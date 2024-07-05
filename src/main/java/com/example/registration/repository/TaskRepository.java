@@ -15,6 +15,12 @@ public interface  TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByUserId(Long UserId);
     Page<Task> findByUserId(Long userId, Pageable pageable);
+    Page<Task> findByUserIdAndDescriptionContaining(Long userId, String description, Pageable pageable);
+    Page<Task> findByUserIdAndTitleContaining(Long userId, String title, Pageable pageable);
+
+    Page<Task> findByUserIdAndId(Long userId, Long id, Pageable pageable);
+
+
 
 
 

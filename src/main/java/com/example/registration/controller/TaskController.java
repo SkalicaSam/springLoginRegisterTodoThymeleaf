@@ -53,21 +53,55 @@ public class TaskController {
     @GetMapping //("/tasks")*
     public String getAllTasks(Model model,
                               @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "3") int size ) {
+                              @RequestParam(defaultValue = "5") int size,
+                              @RequestParam(defaultValue = "") String keyword,
+                              @RequestParam(defaultValue = "") String searchType,
+                              @RequestParam(defaultValue = "id") String sortBy
+                              ) {
         User userLoggedIn= customUserDetailsService.getLoggedInUser();
         if (userLoggedIn == null){
         model.addAttribute("message", "No userLoggedIn.");
         return "alltasks";
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Task> tasksPage = taskService.findByUserId(userLoggedIn.getId(), pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+//        Page<Task> tasksPage = taskService.findByUserId(userLoggedIn.getId(), pageable);
+        Page<Task> tasksPage;
+
+        if (!keyword.isEmpty()) {
+            switch (searchType) {
+                case "title":
+                    tasksPage = taskService.findByUserIdAndTitleContaining(userLoggedIn.getId(), keyword, pageable);
+                    break;
+                case "id":
+                    try {
+                        Long id = Long.parseLong(keyword);
+                        tasksPage = taskService.findByUserIdAndId(userLoggedIn.getId(), id, pageable);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Keyword3333 nie je platné ID: " + keyword); // Logovanie chyby
+                        tasksPage = Page.empty(pageable); // Ak `keyword` nie je validné `id`
+                    }
+                    break;
+                default:
+                    tasksPage = taskService.findByUserIdAndDescriptionContaining(userLoggedIn.getId(), keyword, pageable);
+                    break;
+            }
+        } else {
+            tasksPage = taskService.findByUserId(userLoggedIn.getId(), pageable);
+        }
+
+        boolean hasResults = !tasksPage.isEmpty();
+
         if (tasksPage.isEmpty()) {
             model.addAttribute("message", "No tasks available.");
         } else {
             model.addAttribute("tasks", tasksPage.getContent());
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", tasksPage.getTotalPages());
+            model.addAttribute("sortBy", sortBy);
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("searchType", searchType);
+            model.addAttribute("hasResults", hasResults);
         }
         return "alltasks";
     }
