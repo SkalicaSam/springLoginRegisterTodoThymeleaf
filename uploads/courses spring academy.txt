@@ -1,0 +1,1 @@
+https://spring.academy/courses/spring-academy-secure-rest-api-oauth2

@@ -93,6 +93,11 @@
                                 <p>Title: <span th:text="${task.title}"></span></p>
                                 <p>Description: <span th:text="${task.description}"></span></p>
                             </div>
+                            <ul>
+                                <li th:each="file : ${task.files}">
+                                    <a th:href="@{/files/{fileId}(fileId=${file.id})}" th:text="${file.name}"></a>
+                                </li>
+                            </ul>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </div>

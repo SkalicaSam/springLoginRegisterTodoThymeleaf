@@ -1,13 +1,16 @@
 package com.example.registration.controller;
 
+import com.example.registration.model.File;
 import com.example.registration.model.Task;
 import com.example.registration.model.User;
 import com.example.registration.repository.TaskRepository;
 import com.example.registration.repository.UserRepository;
 import com.example.registration.service.CustomUserDetailsService;
 import com.example.registration.service.TaskService;
+import com.example.registration.service.FileUploadService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
@@ -45,6 +49,10 @@ public class TaskController {
     private UserRepository userRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private FileUploadService fileUploadService;
+
+
     @ModelAttribute("userLoggedInSession")
     public User getLoggedInUser() {
         return customUserDetailsService.getLoggedInUser();
@@ -127,8 +135,10 @@ public class TaskController {
     }
 
     @PostMapping("/saveTask")
-    public String saveTask(@ModelAttribute("task") Task task, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String saveTask(@ModelAttribute("task") Task task, BindingResult result, RedirectAttributes redirectAttributes,
+                           @RequestParam("files") MultipartFile[] files) {
         if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Validation errors occurred!");
             return "redirect:/tasks/create";
         }
         task.setCreatedAt(LocalDateTime.now());
@@ -137,6 +147,21 @@ public class TaskController {
             task.setUser(userLoggedIn);
             taskRepository.save(task);
             redirectAttributes.addFlashAttribute("successMessage", "Task created successfully!");
+
+            boolean hasFiles = false;
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    hasFiles = true;
+                    break;
+                }
+            }
+
+            if (!hasFiles) {    // if (files == null || files.length == 0) {
+                redirectAttributes.addFlashAttribute("message", "Files not contained, or not added!");
+            } else {
+                fileUploadService.storeFiles(task, files);
+                redirectAttributes.addFlashAttribute("message", "Files uploads successfully!");
+            }
             return "redirect:/tasks";
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to create task. Please try again.");
@@ -159,32 +184,27 @@ public class TaskController {
         }
     }
 
-//    @GetMapping("/edit2/{id}")
-//    public String showEditTaskForm2(@PathVariable("id") Long id, Model model) {
-//        Optional<Task> taskOptional = taskRepository.findById(id);
-//        if (taskOptional.isPresent()) {
-//            model.addAttribute("task", taskOptional.get());
-//            return "task-edit";
-//        } else {
-//            return "redirect:/tasks";
-//        }
-//    }
 
     @PostMapping("/updateTask/{id}")
-    public String updateTask(@PathVariable("id") Long id, @ModelAttribute("task") Task task) {
+    public String updateTask(@PathVariable("id") Long id,
+//                             BindingResult result,
+                             @ModelAttribute("task") Task task
+//                             @RequestParam("files") MultipartFile[] files
+
+    ) {
+        System.out.println("/updateTask/{id}");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUsername(username);
         if (user != null) {
             task.setUser(user);
         }
+//        fileUploadService.storeFiles(task, files);
         task.setCreatedAt(LocalDateTime.now());
         taskRepository.save(task);
         return "redirect:/tasks";
     }
 
-//    @PostMapping("/deleteTask/{id}")
-//@RequestMapping(value="/deleteTask/{id}", method={RequestMethod.DELETE, RequestMethod.GET})
 
 @RequestMapping(value="/deleteTask/{id}", method={RequestMethod.DELETE, RequestMethod.GET})
     public String deleteTask(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {

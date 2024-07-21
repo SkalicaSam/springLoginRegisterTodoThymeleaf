@@ -11,5 +11,13 @@
 <p>Description: <span th:text="${task.description}"></span></p>
 <p>Completed At: <span th:text="${task.completedAt}"></span></p>
 <p>Created At: <span th:text="${task.createdAt}"></span></p>
+<h2>Files</h2>
+<ul>
+    <li th:each="file : ${task.files}">
+        <a th:href="@{/files/{fileId}(fileId=${file.id})}" th:text="${file.name}"></a>
+    </li>
+</ul>
+
+<a th:href="@{/tasks}">Back to Task List</a>
 </body>
 </html>

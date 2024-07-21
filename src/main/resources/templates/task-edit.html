@@ -10,20 +10,20 @@
 <div class="container">
     <h1>Edit Task</h1>
 
-    <form th:action="@{/tasks/updateTask/{id}(id=${task.id})}" method="post">
+    <form th:action="@{/tasks/updateTask/{id}(id=${task.id})}" method="post"  >
         <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" class="form-control" th:value="${task.title}" required>
+            <input type="text" id="title" name="title" class="form-control" th:field="${task.title}" required>
         </div>
 
         <div class="form-group">
             <label for="description">Description:</label>
-            <textarea id="description" name="description" class="form-control" rows="4" th:text="${task.description}" cols="50"></textarea>
+            <textarea id="description" name="description" class="form-control" rows="4" th:field="${task.description}" cols="50"></textarea>
         </div>
 
         <div class="form-group">
             <label for="deadline">Deadline:</label>
-            <input type="datetime-local" id="deadline" name="deadline" class="form-control" th:value="${task.deadline}">
+            <input type="datetime-local" id="deadline" name="deadline" class="form-control" th:field="${task.deadline}">
         </div>
 
         <div class="form-group">
@@ -34,6 +34,15 @@
                 <option value="Completed">Completed</option>
             </select>
         </div>
+        <h2>Files</h2>
+<!--        <div class="form-group">-->
+<!--            <label for="files">Add files: </label>-->
+<!--            <input type="file" id="files" name="files" multiple class="form-control"/>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <label for="files">Files</label>-->
+<!--            <input type="file" id="files" name="files" multiple/>-->
+<!--        </div>-->
 
         <button type="submit" class="btn btn-primary">Update Task</button>
     </form>
